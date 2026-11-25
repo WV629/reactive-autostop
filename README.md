@@ -81,20 +81,19 @@ needs no reactive-code change (only the subscribed pair address).
 
 ## Deployed addresses (Lasna testnet)
 
-> Status: contracts are written, tested locally (8/8 forge tests pass), and
-> ready to deploy. **Deployment is pending testnet funds** — Lasna lREACT
-> only comes from the Sepolia faucet (send Sepolia ETH to
-> `0x9b9BB25f1A81078C544C829c5EB7822d747Cf434`, 1 ETH → 100 lREACT), and the
-> deployer wallet currently holds 0 Sepolia ETH. Once ~0.1 Sepolia ETH
-> arrives, deployment is one command (below) and this section gets filled in.
+> Status: **deployed 2026-11-25** (faucet: 0.1 SepETH -> 10.5 lREACT).
+> Reactive loop proven live on Lasna (react tx 1 block after the price crash).
+> **Callback delivery is stalled network-wide on Lasna** (official Reactive MCP:
+> `CALLBACK_NOT_POSTED`, no `CallbackPosted` in the last 30,000 blocks) — see
+> `deployments/DEPLOYMENT-20261125.md` §5. No code change needed once the relay recovers.
 
 | Contract | Address |
 |---|---|
-| mTKN | _pending_ |
-| mUSDC | _pending_ |
-| MockPair (mTKN/mUSDC) | _pending_ |
-| AutoStopReactive | _pending_ |
-| AutoStopVault | _pending_ |
+| mTKN | `0xA4189Dd45FbC861497C67f8A3c06768ACBbE8d3E` |
+| mUSDC | `0x49EaC4c23c354d8e2097D6d68c3A5B4c6a245EEb` |
+| MockPair (mTKN/mUSDC) | `0xAb2EeEfd147C9130BC78302F7be5607738c5436F` |
+| AutoStopReactive | `0x67cE360Dc6B6eB82b611f17e37271D6A7b1AC4D4` |
+| AutoStopVault | `0x452dFB22C0d999cE35A340bC8f55392Ed01143F1` |
 
 Explorer: https://lasna.reactscan.net/
 
@@ -133,10 +132,9 @@ event — plus `getCallbacks(reactiveTxHash)` on the system contract
 
 ## Funding
 
-- Reactive contract: 0.05 lREACT at deploy (covers dozens of `react()` runs;
-  each costs roughly 200–400k gas-equivalent at Lasna gas prices).
-- Vault: 0.02 lREACT at deploy (callback side; destination is Lasna, so the
-  callback is also paid in lREACT).
+- Reactive contract: 0.068 lREACT balance + 0.16 lREACT reserves, debt 0
+  (funded at deploy, topped up, `depositTo` per the official debugging guide).
+- Vault: 0.02 lREACT balance + 0.05 lREACT reserves, debt 0.
 - Top up either side any time with
   `cast send 0x8888…8888 "depositTo(address)" <contract> --value <amount>`,
   or `coverDebt()` on the contract. **Any debt > 0 halts that contract** —
@@ -160,9 +158,12 @@ The tests etch a `MockSystem` onto the real system address
 - [x] Public repo, open source (this repo)
 - [x] Reactive contract + callback contract (Omni style, `reactive-lib-omni` v0.1.0)
 - [x] Working demo flow (local end-to-end tests green)
-- [ ] Deployed contract addresses on Lasna — **blocked on Sepolia ETH for the faucet**
-- [ ] Transaction hashes: origin event → reactive tx → callback tx — **same blocker**
-- [ ] Demo video (< 3 min) — recorded after deployment, from the real run
+- [x] Deployed contract addresses on Lasna — see table above (2026-11-25)
+- [x] Transaction hashes: origin event → reactive tx — see
+      `deployments/DEPLOYMENT-20261125.md`; callback tx **pending Lasna relay
+      recovery** (network-wide stall, not a contract issue)
+- [x] Demo video (< 3 min) — `demo-video/autostop-demo.mp4` (84s, draft:
+      re-record once the callback lands so it shows the completed sale)
 
 ## References
 
